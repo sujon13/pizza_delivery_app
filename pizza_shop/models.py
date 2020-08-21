@@ -10,7 +10,7 @@ class CustomUser(AbstractUser):
     email = models.EmailField(unique=True, max_length=100)
     phone = PhoneNumberField(null=False, blank=False, unique=True)
     address = models.CharField(max_length=200, blank=True, default='')
-    photo = models.ImageField(upload_to='users/', blank=True, null=True)
+    image = models.ImageField(upload_to='users/', blank=True, null=True)
     lat = models.DecimalField(max_digits=8, decimal_places=3, blank=True, null=True)
     lng = models.DecimalField(max_digits=8, decimal_places=3, blank=True, null=True)
 
@@ -20,7 +20,7 @@ class CustomUser(AbstractUser):
     objects = UserManager()
 
     def __str__(self):
-        return str(self.email) + ' ' + str(self.phone)
+        return self.name + ' ' + str(self.email) + ' ' + str(self.phone)
 
 
 class Pizza(models.Model):
@@ -29,7 +29,7 @@ class Pizza(models.Model):
     availability = models.BooleanField(default=True)
     price = models.FloatField(verbose_name='price in TK')
     weight = models.FloatField(verbose_name='weight in ounces')
-    photo = models.ImageField(upload_to='shops/', blank=True, null=True)
+    image = models.ImageField(upload_to='shops/', blank=True, null=True)
     tags = models.CharField(max_length=100, blank=True, null=True)
 
     def __str__(self):
@@ -59,7 +59,7 @@ class Order(models.Model):
         help_text='quantity multiplied by unit price when ordered',
         blank=True
     )
-    address = models.CharField(max_length=200, blank=True, default=ORDER_STATE[0][0])
+    address = models.CharField(max_length=200, blank=True, default='')
     lat = models.DecimalField(max_digits=8, decimal_places=3, blank=True, null=True)
     lng = models.DecimalField(max_digits=8, decimal_places=3, blank=True, null=True)
     order_state = models.CharField(max_length=15, choices=ORDER_STATE, default=ORDER_STATE[0][0])
@@ -70,6 +70,5 @@ class Order(models.Model):
         super(Order, self).save(*args, **kwargs)
 
     def __str__(self):
-        return 'pizza_name: ( ' + ') price: ' +\
+        return 'pizza_name: ( ' + self.pizza.name + ') c_name: (' + str(self.customer.phone) + ') price: ' +\
                str(self.order_price)
-

@@ -4,7 +4,7 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from .models import Pizza, Order
-from .serializers import PizzaSerializer, OrderSerializer
+from .serializers import PizzaSerializer, OrderSerializer, OrderPacingSerializer
 from django.db.models import Q
 from datetime import datetime
 
@@ -68,11 +68,11 @@ class OrderList(APIView):
 
     # POST root/shop/order/
     def post(self, request, format=None):
-        user = self.get_user(request)
-        serializer = OrderSerializer(
+        print(request.data)
+        serializer = OrderPacingSerializer(
             data=modify_incoming_data(request.data),
             context={
-                "user": user
+                "user": request.user
             }
         )
 
@@ -156,7 +156,7 @@ class OrderDetail(APIView):
             'pizza_details': {
                 'name': order['pizza']['name'],
                 'brand': order['pizza']['brand'],
-                'image': order['pizza']['photo']
+                'image': order['pizza']['image']
             },
             'customer_details': {
                 'name': order['customer']['name'],

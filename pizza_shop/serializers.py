@@ -5,20 +5,19 @@ from rest_framework import serializers
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ['name', 'phone', 'address', 'photo', 'lat', 'lng']
+        fields = ['name', 'phone', 'address', 'image', 'lat', 'lng']
 
 
 class PizzaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Pizza
-        fields = '__all__'
+        exclude = ['tags']
 
 
-class OrderSerializer(serializers.ModelSerializer):
+class OrderPacingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = '__all__'
-        depth = 1
 
     def validate_customer(self, value):
         """
@@ -27,3 +26,10 @@ class OrderSerializer(serializers.ModelSerializer):
         if self.context.get('user') != value:
             raise serializers.ValidationError("customer id is different from current logged in user")
         return value
+
+
+class OrderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Order
+        fields = '__all__'
+        depth = 1
