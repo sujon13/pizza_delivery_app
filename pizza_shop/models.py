@@ -38,12 +38,12 @@ class Pizza(models.Model):
 
 
 class Order(models.Model):
-    ORDER_STATE = (
+    ORDER_STATE = [
         ('submitted', 'Submitted'),
         ('confirmed', 'Confirmed'),
         ('cancelled', 'Cancelled'),
         ('delivered', 'Delivered'),
-    )
+    ]
 
     pizza = models.ForeignKey(
         Pizza,
@@ -59,10 +59,10 @@ class Order(models.Model):
         help_text='quantity multiplied by unit price when ordered',
         blank=True
     )
-    address = models.CharField(max_length=200, blank=True, default='')
+    address = models.CharField(max_length=200, blank=True, default=ORDER_STATE[0][0])
     lat = models.DecimalField(max_digits=8, decimal_places=3, blank=True, null=True)
     lng = models.DecimalField(max_digits=8, decimal_places=3, blank=True, null=True)
-    order_state = models.CharField(max_length=15, choices=ORDER_STATE)
+    order_state = models.CharField(max_length=15, choices=ORDER_STATE, default=ORDER_STATE[0][0])
     delivery_time = models.DateTimeField(help_text='THe time of delivery specified by store manager', null=True, blank=True)
 
     def save(self, *args, **kwargs):

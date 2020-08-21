@@ -1,17 +1,18 @@
 from django.contrib.auth import authenticate
-from django.http import Http404
 from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.parsers import JSONParser, MultiPartParser
 from rest_framework.permissions import IsAuthenticated
-from .models import CustomUser
 from .serializers import UserSerializer
 
 
 class Login(APIView):
+    """
+    Login view
+    """
+
     def post(self, request, format=None):
         phone = request.data.get('phone')
         password = request.data.get('password')
@@ -35,29 +36,21 @@ class Login(APIView):
 
 
 class Profile(APIView):
+    """
+    Retrieve, update user's profile.
+    """
+
     permission_classes = [IsAuthenticated]
     parser_classes = [JSONParser, MultiPartParser]
-    """
-    Retrieve, update or delete a snippet instance.
-    """
-    def get_user(self, request):
-        try:
-            user, _ = JWTAuthentication().authenticate(request)
-            return user
-        except Exception as e:
-            raise Http404
 
     def get(self, request, format=None):
-        user = self.get_user(request)
-        serializer = UserSerializer(user)
-
+        serializer = UserSerializer(request.user)
         user = modify_outgoing_data(serializer.data)
         return Response(user, status=status.HTTP_200_OK)
 
     def patch(self, request, format=None):
-        user = self.get_user(request)
         serializer = UserSerializer(
-            user,
+            request.user,
             data=modify_incoming_data(request.data),
             partial=True
         )

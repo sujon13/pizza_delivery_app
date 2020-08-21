@@ -3,11 +3,9 @@ from rest_framework import serializers
 
 
 class UserSerializer(serializers.ModelSerializer):
-    #snippets = serializers.PrimaryKeyRelatedField(many=True, queryset=Snippet.objects.all())
-
     class Meta:
         model = CustomUser
-        fields = ['id', 'name', 'email', 'phone', 'address', 'photo', 'lat', 'lng']
+        fields = ['name', 'phone', 'address', 'photo', 'lat', 'lng']
 
 
 class PizzaSerializer(serializers.ModelSerializer):
@@ -20,3 +18,12 @@ class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = '__all__'
+        depth = 1
+
+    def validate_customer(self, value):
+        """
+        Check that customer is the current logged in user.
+        """
+        if self.context.get('user') != value:
+            raise serializers.ValidationError("customer id is different from current logged in user")
+        return value
