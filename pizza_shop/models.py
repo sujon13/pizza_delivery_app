@@ -36,6 +36,11 @@ class Pizza(models.Model):
         return self.name + ' (from ' + self.brand + ' brand) price: (' +\
                str(self.price) + ') weight: (' + str(self.weight) + ')'
 
+    class Meta:
+        indexes = [
+            models.Index(fields=['name', 'price',]),
+        ]
+
 
 class Order(models.Model):
     ORDER_STATE = [
