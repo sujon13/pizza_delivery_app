@@ -4,16 +4,16 @@ from ..serializers import PizzaSerializer
 from django.db.models import Q
 
 
-class PizzaList(generics.ListAPIView):
+class PizzaList(generics.ListCreateAPIView):
     """
-    List all pizzas(filter).
+    List all pizzas(filter) or create(for test purpose).
     """
 
     serializer_class = PizzaSerializer
 
     def get_queryset(self):
         token = self.request.query_params.get('token')
-        availability = self.request.query_params.get('availability', None)
+        availability = self.request.query_params.get('available', None)
         min_price = self.request.query_params.get('min_price', 0)
         max_price = self.request.query_params.get('max_price', 10000)
 
@@ -28,8 +28,11 @@ class PizzaList(generics.ListAPIView):
             query_set = query_set.filter(availability=availability)
 
         query_set = query_set.filter(price__gte=min_price, price__lte=max_price)
-
         return query_set
+
+    def perform_create(self, serializer):
+        """Save the post data when creating a new pizza."""
+        serializer.save()
 
 
 class PizzaDetail(generics.RetrieveAPIView):

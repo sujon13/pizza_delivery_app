@@ -20,7 +20,7 @@ class CustomUser(AbstractUser):
     objects = UserManager()
 
     def __str__(self):
-        return self.name + ' ' + str(self.email) + ' ' + str(self.phone)
+        return 'name: ' + self.name + ' email: ' + str(self.email) + ' phone' + str(self.phone)
 
 
 class Pizza(models.Model):
@@ -28,9 +28,9 @@ class Pizza(models.Model):
     brand = models.CharField(max_length=50, default='regular')
     availability = models.BooleanField(default=True)
     price = models.FloatField(verbose_name='price in TK')
-    weight = models.FloatField(verbose_name='weight in ounces')
+    weight = models.FloatField(verbose_name='weight in ounces', help_text='1 ounce = 28.3495 gram')
     image = models.ImageField(upload_to='shops/', blank=True, null=True)
-    tags = models.CharField(max_length=100, blank=True, null=True)
+    tags = models.CharField(max_length=100, blank=True, null=True, help_text='It will be help in searching')
 
     def __str__(self):
         return self.name + ' (from ' + self.brand + ' brand) price: (' +\
@@ -68,7 +68,11 @@ class Order(models.Model):
     lat = models.DecimalField(max_digits=8, decimal_places=3, blank=True, null=True)
     lng = models.DecimalField(max_digits=8, decimal_places=3, blank=True, null=True)
     order_state = models.CharField(max_length=15, choices=ORDER_STATE, default=ORDER_STATE[0][0])
-    delivery_time = models.DateTimeField(help_text='THe time of delivery specified by store manager', null=True, blank=True)
+    delivery_time = models.DateTimeField(
+        help_text='The time of delivery specified by store manager',
+        null=True,
+        blank=True
+    )
 
     def save(self, *args, **kwargs):
         self.order_price = self.pizza.price * self.quantity
